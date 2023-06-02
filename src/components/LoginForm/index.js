@@ -6,8 +6,7 @@ class LoginForm extends Component {
     username: '',
     password: '',
     isLoginSuccess: true,
-    usernameMatch: true,
-    passwordMatch: true,
+    errorMsg: '',
   }
 
   onSubmitSuccess = () => {
@@ -35,12 +34,13 @@ class LoginForm extends Component {
       body: JSON.stringify(userDetails),
     }
     const response = await fetch(url, options)
-
+    const data = response.json()
     if (response.ok === true) {
       this.setState({isLoginSuccess: true})
       this.onSubmitSuccess()
     } else {
-      this.setState({isLoginSuccess: false})
+      const errorMsg = data.error_msg
+      this.setState({isLoginSuccess: false, errorMsg: errorMsg})
     }
   }
 
@@ -72,7 +72,7 @@ class LoginForm extends Component {
   }
 
   renderUsernameField = () => {
-    const {username, usernameMatch, passwordMatch} = this.state
+    const {username} = this.state
     return (
       <>
         <label className="input-label" htmlFor="username">
@@ -91,7 +91,7 @@ class LoginForm extends Component {
   }
 
   render() {
-    const {usernameMatch, passwordMatch, isLoginSuccess} = this.state
+    const {isLoginSuccess, errorMsg} = this.state
     return (
       <div>
         <img
@@ -110,9 +110,7 @@ class LoginForm extends Component {
           <button type="submit" className="login-button">
             Login
           </button>
-          {!usernameMatch && <p>*Enter Valid Username</p>}
-          {!passwordMatch && <p>*Enter Valid Password</p>}
-          {!isLoginSuccess && <p>*Username and Password didn't match</p>}
+          {!isLoginSuccess && <p>*{errorMsg}</p>}
         </form>
       </div>
     )
